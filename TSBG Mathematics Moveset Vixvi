@@ -1407,6 +1407,7 @@ local function activate2()
     local TweenService = game:GetService("TweenService")
     local Players = game:GetService("Players")
     local RunService = game:GetService("RunService")
+    local connection
 
     local player = Players.LocalPlayer
     local character = player.Character or player.CharacterAdded:Wait()
@@ -1435,26 +1436,19 @@ local function activate2()
         leftTween:Play()
         leftTween.Completed:Wait()
         rightTween:Play()
+        -- Play
+        connection = RunService.Heartbeat:Connect(playTweens)
     end
-
-    -- Run the loop
-    RunService.Heartbeat:Connect(playTweens)
 end
 
 local function deactivate2()
-    local character = player.Character
-    local humanoid = character:WaitForChild("Humanoid")
-    local rootPart = character:WaitForChild("HumanoidRootPart")
-
-    if animationTrack then
-        animationTrack:Stop()
+    if connection then
+            connection:Disconnect()
+            connection = nil
+        end
+        leftTween:Cancel() -- Stop the current tween
+        rightTween:Cancel() -- Stop the current tween
     end
-
-    fadeOutSound()
-
-    stopMoving(rootPart)
-
-    playStopAnimation(humanoid)
 end
 
 local function toggleAbility()
