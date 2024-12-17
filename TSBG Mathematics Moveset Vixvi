@@ -1451,23 +1451,23 @@ local function deactivate2()
     end
 end
 
-local function toggleAbility()
+local function toggleAbility2()
     if not isActive then
-        activate()
+        activate2()
     else
-        deactivate()
+        deactivate2()
     end
-    isActive = not isActive
+    isActive2 = not isActive
 end
 
 local function onKeyPress(input)
     if input.KeyCode == Enum.KeyCode.L then
-        toggleAbility()
+        toggleAbility2()
     end
 end
 
 local function onToolActivated()
-    toggleAbility()
+    toggleAbility2()
 end
 
 if isPC then
