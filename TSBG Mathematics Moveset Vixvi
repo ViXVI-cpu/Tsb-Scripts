@@ -1390,8 +1390,9 @@ end)
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
-local IsActive2 = false
 
+local IsActive2 = false
+local isPC2 = userInputService.KeyboardEnabled
 
 while not LocalPlayer do
     wait()
@@ -1407,8 +1408,8 @@ local function activate2()
     local TweenService = game:GetService("TweenService")
     local Players = game:GetService("Players")
     local RunService = game:GetService("RunService")
-    local connection
 
+    local connection
     local player = Players.LocalPlayer
     local character = player.Character or player.CharacterAdded:Wait()
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
@@ -1452,7 +1453,7 @@ local function deactivate2()
 end
 
 local function toggleAbility2()
-    if not isActive then
+    if not isActive2 then
         activate2()
     else
         deactivate2()
@@ -1460,17 +1461,17 @@ local function toggleAbility2()
     isActive2 = not isActive
 end
 
-local function onKeyPress(input)
+local function onKeyPress2(input)
     if input.KeyCode == Enum.KeyCode.L then
         toggleAbility2()
     end
 end
 
-local function onToolActivated()
+local function onToolActivated2()
     toggleAbility2()
 end
 
-if isPC then
+if isPC2 then
     userInputService.InputBegan:Connect(onKeyPress)
 else
     tool.Activated:Connect(onToolActivated)
