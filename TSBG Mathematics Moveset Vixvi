@@ -1388,91 +1388,13 @@ Lighting:GetPropertyChangedSignal("ClockTime"):Connect(function()
     Lighting.ClockTime = 0
 end)
 
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-
-local IsActive2 = false
-local isPC2 = userInputService.KeyboardEnabled
-
-while not LocalPlayer do
-    wait()
-    LocalPlayer = Players.LocalPlayer
+local function Dodge(tool)
+    tool.Activated:Connect(function()
+        PlayDodge(tool)
+    end)
 end
 
-local gtool = Instance.new("Tool")
-gtool.Name = "123"
-gtool.RequiresHandle = false
-gtool.Parent = player.Backpack
 
-local function activate2()
-    local TweenService = game:GetService("TweenService")
-    local Players = game:GetService("Players")
-    local RunService = game:GetService("RunService")
+local tool = createTool("123")
+Dodge(tool)
 
-    local connection
-    local player = Players.LocalPlayer
-    local character = player.Character or player.CharacterAdded:Wait()
-    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-
-    -- Tween settings
-    local tweenInfo = TweenInfo.new(
-        1, -- Time (1 second)
-        Enum.EasingStyle.Quad, -- Easing style
-        Enum.EasingDirection.InOut, -- Easing direction
-        -1, -- Repeat indefinitely (-1)
-        true -- Reverse the tween after completion
-)
-
-    -- Goal positions
-    local originalPosition = humanoidRootPart.Position
-    local leftPosition = originalPosition + Vector3.new(-5, 0, 0) -- Move 5 studs to the left
-    local rightPosition = originalPosition + Vector3.new(5, 0, 0) -- Move 5 studs to the right
-
-    -- Create tweens
-    local leftTween = TweenService:Create(humanoidRootPart, tweenInfo, {Position = leftPosition})
-    local rightTween = TweenService:Create(humanoidRootPart, tweenInfo, {Position = rightPosition})
-
-    -- Play the tweens alternately
-    local function playTweens()
-        leftTween:Play()
-        leftTween.Completed:Wait()
-        rightTween:Play()
-        -- Play
-        connection = RunService.Heartbeat:Connect(playTweens)
-    end
-end
-
-local function deactivate2()
-    if connection then
-            connection:Disconnect()
-            connection = nil
-        end
-        leftTween:Cancel() -- Stop the current tween
-        rightTween:Cancel() -- Stop the current tween
-    end
-end
-
-local function toggleAbility2()
-    if not isActive2 then
-        activate2()
-    else
-        deactivate2()
-    end
-    isActive2 = not isActive
-end
-
-local function onKeyPress2(input)
-    if input.KeyCode == Enum.KeyCode.L then
-        toggleAbility2()
-    end
-end
-
-local function onToolActivated2()
-    toggleAbility2()
-end
-
-if isPC2 then
-    userInputService.InputBegan:Connect(onKeyPress)
-else
-    tool.Activated:Connect(onToolActivated)
-end
