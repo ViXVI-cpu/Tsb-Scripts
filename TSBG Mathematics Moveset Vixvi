@@ -1360,51 +1360,115 @@ getgenv().RArmCol = char['Right Arm'].ChildAdded:Connect(function(pp)
     end
 end)
 
-local function Dodge(tool)
+local isActive = false
+
+local function Paradox(tool)
     tool.Activated:Connect(function()
-        PlayDodge(tool)
+        toggleAbility()
     end)
 end
 
-local tool = createTool("123")
-Dodge(tool)
+local tool = createTool("Paradox")
+Paradox(tool)
 
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
 
 local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+local camera = Workspace.CurrentCamera
 
--- Tween settings
-local tweenInfo = TweenInfo.new(
-    1, -- Time (1 second)
-    Enum.EasingStyle.Quad, -- Easing style
-    Enum.EasingDirection.InOut, -- Easing direction
-    -1, -- Repeat indefinitely (-1)
-    true -- Reverse the tween after completion
-)
+-- Movement distance and speed
+local movementDistance = 50 -- Distance to move left or right
+local moveSpeed = 0.5 -- Time for smooth movement (lower is faster)
 
--- Goal positions
-local originalPosition = humanoidRootPart.Position
-local leftPosition = originalPosition + Vector3.new(-5, 0, 0) -- Move 5 studs to the left
-local rightPosition = originalPosition + Vector3.new(5, 0, 0) -- Move 5 studs to the right
+local isMoving = false -- Tracks whether movement is active
 
--- Create tweens
-local leftTween = TweenService:Create(humanoidRootPart, tweenInfo, {Position = leftPosition})
-local rightTween = TweenService:Create(humanoidRootPart, tweenInfo, {Position = rightPosition})
+-- UI Button
+local screenGui = Instance.new("ScreenGui")
+local button = Instance.new("TextButton")
 
--- Function to play tweens alternately
-local function playTweens()
-    leftTween:Play()
-    leftTween.Completed:Wait()
-    rightTween:Play()
+screenGui.Parent = player:WaitForChild("PlayerGui")
+button.Parent = screenGui
+button.Size = UDim2.new(0, 200, 0, 50) -- Button size
+button.Position = UDim2.new(0.5, -100, 0.9, 0) -- Centered near the bottom of the screen
+button.Text = "Start Movement"
+button.BackgroundColor3 = Color3.new(0.2, 0.8, 0.2) -- Green button
+
+-- Function to stop movement
+local function stopMovement()
+    isMoving = false
 end
 
-local connection
+-- Function to calculate the camera's right vector offset for movement
+local function checkCameraOffset()
+    local cameraRightVector = camera.CFrame.RightVector  -- Get the right direction of the camera
+    local leftOffset = -cameraRightVector * movementDistance  -- Move left
+    local rightOffset = cameraRightVector * movementDistance  -- Move right
 
-function PlayDodge(tool)
-    connection = RunService.Heartbeat:Connect(playTweens)
+    return leftOffset, rightOffset
+end
+
+-- Function to smoothly rotate the character to face the camera direction
+local function rotateCharacter()
+    humanoidRootPart.CFrame = CFrame.new(humanoidRootPart.Position, camera.CFrame.Position + camera.CFrame.LookVector)
+end
+
+-- Function to play the tween for character movement
+local function playTween(targetPosition)
+    local tweenInfo = TweenInfo.new(moveSpeed, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
+    local tweenGoal = {CFrame = targetPosition}
+    local tween = TweenService:Create(humanoidRootPart, tweenInfo, tweenGoal)
+    tween:Play()
+end
+
+-- Function to start smooth movement
+local function startMovement()
+    isMoving = true
+
+    -- Smooth movement loop
+    while isMoving do
+        local leftOffset, rightOffset = checkCameraOffset()
+
+        -- Smoothly move the character to the left
+        local leftGoal = humanoidRootPart.CFrame + leftOffset
+        playTween(leftGoal)
+        rotateCharacter() -- Keep rotating towards the camera direction
+
+        -- Wait before moving to the next direction
+        wait(moveSpeed)
+
+        -- Check if the movement has been stopped
+        if not isMoving then break end
+
+        -- Smoothly move the character to the right
+        local rightGoal = humanoidRootPart.CFrame + rightOffset
+        playTween(rightGoal)
+        rotateCharacter() -- Keep rotating towards the camera direction
+
+        -- Wait before moving to the next direction
+        wait(moveSpeed)
+
+        -- Check if the movement has been stopped
+        if not isMoving then break end
+    end
+end
+
+local function activate()
+    startMovement()
+end
+
+local function deactivate()
+    stopMovement()
+end
+
+local function toggleAbility()
+    if not isActive then
+        activate()
+    else
+        deactivate()
+    end
+    isActive = not isActive
 end
