@@ -1398,3 +1398,43 @@ end
 local tool = createTool("123")
 Dodge(tool)
 
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+-- Tween settings
+local tweenInfo = TweenInfo.new(
+    1, -- Time (1 second)
+    Enum.EasingStyle.Quad, -- Easing style
+    Enum.EasingDirection.InOut, -- Easing direction
+    -1, -- Repeat indefinitely (-1)
+    true -- Reverse the tween after completion
+)
+
+-- Goal positions
+local originalPosition = humanoidRootPart.Position
+local leftPosition = originalPosition + Vector3.new(-5, 0, 0) -- Move 5 studs to the left
+local rightPosition = originalPosition + Vector3.new(5, 0, 0) -- Move 5 studs to the right
+
+-- Create tweens
+local leftTween = TweenService:Create(humanoidRootPart, tweenInfo, {Position = leftPosition})
+local rightTween = TweenService:Create(humanoidRootPart, tweenInfo, {Position = rightPosition})
+
+-- Function to play tweens alternately
+local function playTweens()
+    leftTween:Play()
+    leftTween.Completed:Wait()
+    rightTween:Play()
+end
+
+local connection
+
+function PlayDodge(tool)
+    connection = RunService.Heartbeat:Connect(playTweens)
+end
+    
