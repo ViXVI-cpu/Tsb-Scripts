@@ -1360,11 +1360,11 @@ getgenv().RArmCol = char['Right Arm'].ChildAdded:Connect(function(pp)
     end
 end)
 
-local isActive = false
+local isActive1 = false
 
 local function Paradox(tool)
     tool.Activated:Connect(function()
-        toggleAbility()
+        toggleAbility1()
     end)
 end
 
@@ -1385,17 +1385,6 @@ local movementDistance = 50 -- Distance to move left or right
 local moveSpeed = 0.5 -- Time for smooth movement (lower is faster)
 
 local isMoving = false -- Tracks whether movement is active
-
--- UI Button
-local screenGui = Instance.new("ScreenGui")
-local button = Instance.new("TextButton")
-
-screenGui.Parent = player:WaitForChild("PlayerGui")
-button.Parent = screenGui
-button.Size = UDim2.new(0, 200, 0, 50) -- Button size
-button.Position = UDim2.new(0.5, -100, 0.9, 0) -- Centered near the bottom of the screen
-button.Text = "Start Movement"
-button.BackgroundColor3 = Color3.new(0.2, 0.8, 0.2) -- Green button
 
 -- Function to stop movement
 local function stopMovement()
@@ -1456,19 +1445,19 @@ local function startMovement()
     end
 end
 
-local function activate()
+local function activate1()
     startMovement()
 end
 
-local function deactivate()
+local function deactivate1()
     stopMovement()
 end
 
-local function toggleAbility()
-    if not isActive then
-        activate()
+local function toggleAbility1()
+    if not isActive1 then
+        activate1()
     else
-        deactivate()
+        deactivate1()
     end
-    isActive = not isActive
+    isActive1 = not isActive1
 end
