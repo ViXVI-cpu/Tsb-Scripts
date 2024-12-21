@@ -1360,40 +1360,11 @@ getgenv().RArmCol = char['Right Arm'].ChildAdded:Connect(function(pp)
     end
 end)
 
-local Lighting = game:GetService("Lighting")
-
--- Define the night skybox
-local nightSkybox = {
-    SkyboxUp = "rbxassetid://22334455",    -- Replace with your asset ID
-    SkyboxDown = "rbxassetid://55443322", 
-    SkyboxLeft = "rbxassetid://66778899",
-    SkyboxRight = "rbxassetid://99887766",
-    SkyboxFront = "rbxassetid://11224466",
-    SkyboxBack = "rbxassetid://66552211"
-}
-
--- Function to set the night skybox
-local function setNightSkybox()
-    for key, assetId in pairs(nightSkybox) do
-        Lighting[key] = assetId
-    end
-    Lighting.ClockTime = 0 -- Forces the time to stay at midnight
-end
-
--- Set the skybox to night
-setNightSkybox()
-
--- Prevent time from changing (optional)
-Lighting:GetPropertyChangedSignal("ClockTime"):Connect(function()
-    Lighting.ClockTime = 0
-end)
-
 local function Dodge(tool)
     tool.Activated:Connect(function()
         PlayDodge(tool)
     end)
 end
-
 
 local tool = createTool("123")
 Dodge(tool)
@@ -1437,4 +1408,3 @@ local connection
 function PlayDodge(tool)
     connection = RunService.Heartbeat:Connect(playTweens)
 end
-    
