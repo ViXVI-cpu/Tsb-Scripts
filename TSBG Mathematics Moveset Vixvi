@@ -1364,100 +1364,34 @@ local isActive1 = false
 
 local function Paradox(tool)
     tool.Activated:Connect(function()
-        toggleAbility1()
+        teleportLogic()
     end)
 end
 
 local tool = createTool("Paradox")
 Paradox(tool)
 
-local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
-local Workspace = game:GetService("Workspace")
-
+local UserInputService = game:GetService("UserInputService")
 local player = Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-local camera = Workspace.CurrentCamera
+local mouse = player:GetMouse()
 
--- Movement distance and speed
-local movementDistance = 50 -- Distance to move left or right
-local moveSpeed = 0.5 -- Time for smooth movement (lower is faster)
+local function teleportToPosition(position)
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 
-local isMoving = false -- Tracks whether movement is active
-
--- Function to stop movement
-local function stopMovement()
-    isMoving = false
+    humanoidRootPart.CFrame = CFrame.new(position + Vector3.new(0, 3, 0)) -- Offset slightly above the ground
 end
 
--- Function to calculate the camera's right vector offset for movement
-local function checkCameraOffset()
-    local cameraRightVector = camera.CFrame.RightVector  -- Get the right direction of the camera
-    local leftOffset = -cameraRightVector * movementDistance  -- Move left
-    local rightOffset = cameraRightVector * movementDistance  -- Move right
+function teleportLogic()
+    -- Mouse click for PC
+    mouse.Button1Down:Connect(function()
+        teleportToPosition(mouse.Hit.Position)
+    end)
 
-    return leftOffset, rightOffset
-end
-
--- Function to smoothly rotate the character to face the camera direction
-local function rotateCharacter()
-    humanoidRootPart.CFrame = CFrame.new(humanoidRootPart.Position, camera.CFrame.Position + camera.CFrame.LookVector)
-end
-
--- Function to play the tween for character movement
-local function playTween(targetPosition)
-    local tweenInfo = TweenInfo.new(moveSpeed, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
-    local tweenGoal = {CFrame = targetPosition}
-    local tween = TweenService:Create(humanoidRootPart, tweenInfo, tweenGoal)
-    tween:Play()
-end
-
--- Function to start smooth movement
-local function startMovement()
-    isMoving = true
-
-    -- Smooth movement loop
-    while isMoving do
-        local leftOffset, rightOffset = checkCameraOffset()
-
-        -- Smoothly move the character to the left
-        local leftGoal = humanoidRootPart.CFrame + leftOffset
-        playTween(leftGoal)
-        rotateCharacter() -- Keep rotating towards the camera direction
-
-        -- Wait before moving to the next direction
-        wait(moveSpeed)
-
-        -- Check if the movement has been stopped
-        if not isMoving then break end
-
-        -- Smoothly move the character to the right
-        local rightGoal = humanoidRootPart.CFrame + rightOffset
-        playTween(rightGoal)
-        rotateCharacter() -- Keep rotating towards the camera direction
-
-        -- Wait before moving to the next direction
-        wait(moveSpeed)
-
-        -- Check if the movement has been stopped
-        if not isMoving then break end
-    end
-end
-
-local function activate1()
-    startMovement()
-end
-
-local function deactivate1()
-    stopMovement()
-end
-
-local function toggleAbility1()
-    if not isActive1 then
-        activate1()
-    else
-        deactivate1()
-    end
-    isActive1 = not isActive1
+    -- Touch tap for mobile
+    UserInputService.TouchTapInWorld:Connect(function(tapPosition, processed)
+        if processed then return end -- Ignore if UI processed the touch
+        teleportToPosition(tapPosition)
+    end)
 end
