@@ -1384,7 +1384,7 @@ local function playTeleportAnimation()
 
     -- Load the animation (replace with your animation ID)
     local animation = Instance.new("Animation")
-    animation.AnimationId = "rbxassetid://18715714749" -- Replace with your animation ID
+    animation.AnimationId = "rbxassetid://15957361339" -- Replace with your animation ID
     local animator = humanoid:FindFirstChild("Animator") or humanoid:WaitForChild("Animator")
     local animationTrack = animator:LoadAnimation(animation)
 
