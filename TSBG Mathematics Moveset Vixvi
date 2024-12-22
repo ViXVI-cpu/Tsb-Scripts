@@ -1377,18 +1377,18 @@ local mouse = player:GetMouse()
 
 local camera = Workspace.CurrentCamera
 
--- Create an Animation object
-local function playTeleportAnimation()
-    local character = player.Character or player.CharacterAdded:Wait()
-    local humanoid = character:WaitForChild("Humanoid")
+local function playTeleportAnimation
+    local animationTrack = humanoid:LoadAnimation(teleportAnimation)
+        animationTrack:Play()
 
-    -- Load the animation (replace with your animation ID)
-    local animation = Instance.new("Animation")
-    animation.AnimationId = "rbxassetid://15957361339" -- Replace with your animation ID
-    local animator = humanoid:FindFirstChild("Animator") or humanoid:WaitForChild("Animator")
-    local animationTrack = animator:LoadAnimation(animation)
+                
+        humanoidRootPart.CFrame = closestHumanoidRootPart.CFrame * CFrame.new(0, 0, 1)
 
-    animationTrack:Play()
+                
+        animationTrack.Stopped:Connect(function()
+            animationTrack:Stop()
+        end)
+    end
 end
 
 -- Function to teleport the player
