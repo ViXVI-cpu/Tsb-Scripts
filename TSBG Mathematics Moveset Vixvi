@@ -1391,8 +1391,7 @@ local function teleportToPosition(position)
     local character = player.Character or player.CharacterAdded:Wait()
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 
-    humanoidRootPart.CFrame = CFrame.new(position + Vector3.new(0, 3, 0)) -- Offset slightly above the ground
-    wait(0.1)
+    humanoidRootPart.CFrame = CFrame.new(position + Vector3.new(0, 3, 0)) -- Offset slightly above the grou
     playTeleportAnimation()
 end
 
