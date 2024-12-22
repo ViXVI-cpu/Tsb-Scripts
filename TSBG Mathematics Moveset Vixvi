@@ -1362,7 +1362,7 @@ end)
 
 local function infiniteParadox(tool)
     tool.Activated:Connect(function()
-        teleportLogic()
+        teleportLogic(tool)
     end)
 end
 
@@ -1395,7 +1395,7 @@ local function teleportToPosition(position)
     playTeleportAnimation()
 end
 
-function teleportLogic()
+function teleportLogic(tool)
     -- Mouse click for PC
     mouse.Button1Down:Connect(function()
         teleportToPosition(mouse.Hit.Position)
