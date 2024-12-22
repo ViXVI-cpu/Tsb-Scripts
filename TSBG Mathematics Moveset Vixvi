@@ -1387,6 +1387,7 @@ end
 
 function teleportLogic(tool)
     if not tool.Activated then return end
+
     -- Mouse click for PC
     mouse.Button1Down:Connect(function()
         teleportToPosition(mouse.Hit.Position)
