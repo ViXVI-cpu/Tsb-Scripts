@@ -1377,27 +1377,12 @@ local mouse = player:GetMouse()
 
 local camera = Workspace.CurrentCamera
 
-local function playTeleportAnimation
-    local animationTrack = humanoid:LoadAnimation(teleportAnimation)
-        animationTrack:Play()
-
-                
-        humanoidRootPart.CFrame = closestHumanoidRootPart.CFrame * CFrame.new(0, 0, 1)
-
-                
-        animationTrack.Stopped:Connect(function()
-            animationTrack:Stop()
-        end)
-    end
-end
-
 -- Function to teleport the player
 local function teleportToPosition(position)
     local character = player.Character or player.CharacterAdded:Wait()
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 
     humanoidRootPart.CFrame = CFrame.new(position + Vector3.new(0, 3, 0)) -- Offset slightly above the ground
-    playTeleportAnimation() -- Play the teleport animation after teleportation
 end
 
 function teleportLogic(tool)
