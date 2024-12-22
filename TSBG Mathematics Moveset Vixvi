@@ -1360,16 +1360,14 @@ getgenv().RArmCol = char['Right Arm'].ChildAdded:Connect(function(pp)
     end
 end)
 
-local isActive1 = false
-
-local function Paradox(tool)
+local function infiniteParadox(tool)
     tool.Activated:Connect(function()
         teleportLogic()
     end)
 end
 
 local tool = createTool("Paradox")
-Paradox(tool)
+infiniteParadox(tool)
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
