@@ -1369,6 +1369,15 @@ end
 local tool = createTool("Paradox")
 infiniteParadox(tool)
 
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+local player = Players.LocalPlayer
+local mouse = player:GetMouse()
+
+local camera = Workspace.CurrentCamera
+
+-- Create an Animation object
 local function playTeleportAnimation()
     local character = player.Character or player.CharacterAdded:Wait()
     local humanoid = character:WaitForChild("Humanoid")
@@ -1382,17 +1391,13 @@ local function playTeleportAnimation()
     animationTrack:Play()
 end
 
-local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
-local player = Players.LocalPlayer
-local mouse = player:GetMouse()
-
+-- Function to teleport the player
 local function teleportToPosition(position)
     local character = player.Character or player.CharacterAdded:Wait()
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 
-    humanoidRootPart.CFrame = CFrame.new(position + Vector3.new(0, 3, 0)) -- Offset slightly above the grou
-    playTeleportAnimation()
+    humanoidRootPart.CFrame = CFrame.new(position + Vector3.new(0, 3, 0)) -- Offset slightly above the ground
+    playTeleportAnimation() -- Play the teleport animation after teleportation
 end
 
 function teleportLogic(tool)
@@ -1402,8 +1407,16 @@ function teleportLogic(tool)
     end)
 
     -- Touch tap for mobile
-    UserInputService.TouchTapInWorld:Connect(function(tapPosition, processed)
+    UserInputService.TouchTapInWorld:Connect(function(screenPosition, processed)
         if processed then return end -- Ignore if UI processed the touch
-        teleportToPosition(tapPosition)
+
+        -- Convert the screen position to a world position
+        local ray = camera:ScreenPointToRay(screenPosition.X, screenPosition.Y)
+        local rayDirection = ray.Direction * 1000 -- Extend the ray for a long distance
+        local raycastResult = Workspace:Raycast(ray.Origin, rayDirection)
+
+        if raycastResult then
+            teleportToPosition(raycastResult.Position) -- Teleport to the raycast hit position
+        end
     end)
 end
