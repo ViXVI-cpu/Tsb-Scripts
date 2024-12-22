@@ -1369,6 +1369,19 @@ end
 local tool = createTool("Paradox")
 infiniteParadox(tool)
 
+local function playTeleportAnimation()
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoid = character:WaitForChild("Humanoid")
+
+    -- Load the animation (replace with your animation ID)
+    local animation = Instance.new("Animation")
+    animation.AnimationId = "rbxassetid://18715714749" -- Replace with your animation ID
+    local animator = humanoid:FindFirstChild("Animator") or humanoid:WaitForChild("Animator")
+    local animationTrack = animator:LoadAnimation(animation)
+
+    animationTrack:Play()
+end
+
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local player = Players.LocalPlayer
@@ -1379,6 +1392,8 @@ local function teleportToPosition(position)
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 
     humanoidRootPart.CFrame = CFrame.new(position + Vector3.new(0, 3, 0)) -- Offset slightly above the ground
+    wait(0.1)
+    playTeleportAnimation()
 end
 
 function teleportLogic()
