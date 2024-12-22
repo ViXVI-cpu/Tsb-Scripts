@@ -1360,14 +1360,16 @@ getgenv().RArmCol = char['Right Arm'].ChildAdded:Connect(function(pp)
     end
 end)
 
-local function infiniteParadox(tool)
+local function paradox(tool)
     tool.Activated:Connect(function()
         teleportLogic(tool)
     end)
 end
 
 local tool = createTool("Paradox")
-infiniteParadox(tool)
+paradox(tool)
+
+local yo = tool.Activated
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
@@ -1379,7 +1381,7 @@ local camera = Workspace.CurrentCamera
 
 -- Function to teleport the player
 local function teleportToPosition(position)
-    if not tool.Activated then return end
+    if not yo then return end
 
     local character = player.Character or player.CharacterAdded:Wait()
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
@@ -1388,8 +1390,8 @@ local function teleportToPosition(position)
 end
 
 function teleportLogic(tool)
+
     if isPC then
-        -- Mouse click for PC
         mouse.Button1Down:Connect(function()
             teleportToPosition(mouse.Hit.Position)
         end)
@@ -1399,7 +1401,7 @@ function teleportLogic(tool)
     UserInputService.TouchTapInWorld:Connect(function(screenPosition, processed)
         if processed then return end -- Ignore if UI processed the touch
 
-    -- Convert the screen position to a world position
+        -- Convert the screen position to a world position
         local ray = camera:ScreenPointToRay(screenPosition.X, screenPosition.Y)
         local rayDirection = ray.Direction * 1000 -- Extend the ray for a long distance 
         local raycastResult = Workspace:Raycast(ray.Origin, rayDirection)
