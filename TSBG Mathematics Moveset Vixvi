@@ -1379,6 +1379,8 @@ local camera = Workspace.CurrentCamera
 
 -- Function to teleport the player
 local function teleportToPosition(position)
+    if not tool.Activated then return end
+
     local character = player.Character or player.CharacterAdded:Wait()
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 
@@ -1386,24 +1388,24 @@ local function teleportToPosition(position)
 end
 
 function teleportLogic(tool)
-    if not tool.Activated then return end
-
-    -- Mouse click for PC
-    mouse.Button1Down:Connect(function()
-        teleportToPosition(mouse.Hit.Position)
-    end)
+    if isPC then
+        -- Mouse click for PC
+        mouse.Button1Down:Connect(function()
+            teleportToPosition(mouse.Hit.Position)
+        end)
+    end
 
     -- Touch tap for mobile
     UserInputService.TouchTapInWorld:Connect(function(screenPosition, processed)
         if processed then return end -- Ignore if UI processed the touch
 
-        -- Convert the screen position to a world position
+    -- Convert the screen position to a world position
         local ray = camera:ScreenPointToRay(screenPosition.X, screenPosition.Y)
-        local rayDirection = ray.Direction * 1000 -- Extend the ray for a long distance
+        local rayDirection = ray.Direction * 1000 -- Extend the ray for a long distance 
         local raycastResult = Workspace:Raycast(ray.Origin, rayDirection)
 
         if raycastResult then
             teleportToPosition(raycastResult.Position) -- Teleport to the raycast hit position
         end
     end)
-end
+ end
