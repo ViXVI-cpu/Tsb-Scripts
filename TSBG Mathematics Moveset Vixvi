@@ -1374,7 +1374,7 @@ local camera = Workspace.CurrentCamera
 
 -- Function to teleport the player
 local function teleportToPosition(position)
-    if not isOn then return end
+    if isOn then
 
     local character = player.Character or player.CharacterAdded:Wait()
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
