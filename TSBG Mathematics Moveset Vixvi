@@ -1362,14 +1362,14 @@ end)
 
 local function paradox(tool)
     tool.Activated:Connect(function()
-        teleportLogic(tool)
+        toggleTool()
     end)
 end
 
+local isOn = false
+
 local tool = createTool("Paradox")
 paradox(tool)
-
-local yo = tool.Activated
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
@@ -1381,7 +1381,7 @@ local camera = Workspace.CurrentCamera
 
 -- Function to teleport the player
 local function teleportToPosition(position)
-    if not yo then return end
+    if not isOn then return end
 
     local character = player.Character or player.CharacterAdded:Wait()
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
@@ -1390,24 +1390,58 @@ local function teleportToPosition(position)
 end
 
 function teleportLogic(tool)
+    if isOn then
+        if isPC then
+            mouse.Button1Down:Connect(function()
+                teleportToPosition(mouse.Hit.Position)
+            end)
+        end
 
-    if isPC then
-        mouse.Button1Down:Connect(function()
-            teleportToPosition(mouse.Hit.Position)
+        -- Touch tap for mobile
+        UserInputService.TouchTapInWorld:Connect(function(screenPosition, processed)
+            if processed then return end -- Ignore if UI processed the touch
+
+            -- Convert the screen position to a world position
+            local ray = camera:ScreenPointToRay(screenPosition.X, screenPosition.Y)
+            local rayDirection = ray.Direction * 1000 -- Extend the ray for a long distance 
+            local raycastResult = Workspace:Raycast(ray.Origin, rayDirection)
+
+            if raycastResult then
+                teleportToPosition(raycastResult.Position) -- Teleport to the raycast hit position
+            end
         end)
     end
+end
 
-    -- Touch tap for mobile
-    UserInputService.TouchTapInWorld:Connect(function(screenPosition, processed)
-        if processed then return end -- Ignore if UI processed the touch
+local function onKeyPressed(input)
+    if input.KeyCode == Enum.KeyCode.P then
+        toggleAbility()
+    end
+end
 
-        -- Convert the screen position to a world position
-        local ray = camera:ScreenPointToRay(screenPosition.X, screenPosition.Y)
-        local rayDirection = ray.Direction * 1000 -- Extend the ray for a long distance 
-        local raycastResult = Workspace:Raycast(ray.Origin, rayDirection)
+local function on()
+    isOn = true
 
-        if raycastResult then
-            teleportToPosition(raycastResult.Position) -- Teleport to the raycast hit position
-        end
-    end)
- end
+    teleportLogic(tool)
+end
+
+local function off()
+   isOn = false
+end
+
+function toggleTool()
+    if not isOn then
+        on()
+    else
+        off()
+    end
+    isOn = not isOn
+end
+
+local function onToolActive()
+    toggleTool()
+end
+
+if isPC then
+    userInputService.InputBegan:Connect(onKeyPressed)
+end
