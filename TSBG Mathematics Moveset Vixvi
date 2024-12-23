@@ -1297,9 +1297,9 @@ local tool = createTool("Domain Expansion")
 local scriptActived = false -- Set to true to activate the teleportation sequence
 
 -- Specify the coordinates for teleportation
-local teleportX = 100 -- Replace with your desired X coordinate
-local teleportY = 50 -- Replace with your desired Y coordinate
-local teleportZ = 200 -- Replace with your desired Z coordinate
+local teleportX = 1063.89 -- Replace with your desired X coordinate
+local teleportY = 131.71 -- Replace with your desired Y coordinate
+local teleportZ = 23009.02 -- Replace with your desired Z coordinate
 
 -- Wait for the player's character to load
 local player = game.Players.LocalPlayer
