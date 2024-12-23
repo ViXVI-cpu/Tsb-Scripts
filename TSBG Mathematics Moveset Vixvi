@@ -1293,8 +1293,8 @@ end
 
 local tool = createTool("Domain Expansion")
 
--- Control variable to enable/disable the script
-local scriptActived = true -- Set to true to activate the teleportation sequence
+--- Control variable to enable/disable the script
+local scriptActive = true -- Set to true to activate the teleportation sequence
 
 -- Specify the coordinates for teleportation
 local teleportX = 1063.89 -- Replace with your desired X coordinate
@@ -1307,17 +1307,18 @@ local character = player.Character or player.CharacterAdded:Wait()
 local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 
 -- Variable to store the original position
-local originalPosition = nil
+local originalPosition = humanoidRootPart.Position
 
 -- Function to save the current position
 local function saveCurrentPosition()
     originalPosition = humanoidRootPart.Position
+    print(string.format("Saved original position: X=%.2f, Y=%.2f, Z=%.2f", originalPosition.X, originalPosition.Y, originalPosition.Z))
 end
 
 -- Function to teleport to the specified coordinates
 local function teleportToSpecifiedCoordinates()
-    if scriptActived then
-        saveCurrentPosition() -- Save the original position
+    if scriptActive then
+        saveCurrentPosition() -- Always save the original position before teleporting
         humanoidRootPart.CFrame = CFrame.new(Vector3.new(teleportX, teleportY, teleportZ))
         print(string.format("Teleported to X=%.2f, Y=%.2f, Z=%.2f", teleportX, teleportY, teleportZ))
     else
@@ -1327,10 +1328,10 @@ end
 
 -- Function to return to the original position
 local function returnToOriginalPosition()
-    if scriptActived then
+    if scriptActive then
         if originalPosition then
             humanoidRootPart.CFrame = CFrame.new(originalPosition)
-            print(string.format("Returned to original position X=%.2f, Y=%.2f, Z=%.2f", originalPosition.X, originalPosition.Y, originalPosition.Z))
+            print(string.format("Returned to original position: X=%.2f, Y=%.2f, Z=%.2f", originalPosition.X, originalPosition.Y, originalPosition.Z))
         else
             warn("Original position is not saved. Unable to return.")
         end
