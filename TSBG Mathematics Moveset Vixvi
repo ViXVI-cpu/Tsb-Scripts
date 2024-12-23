@@ -1360,16 +1360,9 @@ getgenv().RArmCol = char['Right Arm'].ChildAdded:Connect(function(pp)
     end
 end)
 
-local function paradox(tool)
-    tool.Activated:Connect(function()
-        toggleTool()
-    end)
-end
-
 local isOn = false
 
 local tool = createTool("Paradox")
-paradox(tool)
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
@@ -1389,40 +1382,32 @@ local function teleportToPosition(position)
     humanoidRootPart.CFrame = CFrame.new(position + Vector3.new(0, 3, 0)) -- Offset slightly above the ground
 end
 
-function teleportLogic(tool)
-    if isOn then
-        if isPC then
-            mouse.Button1Down:Connect(function()
-                teleportToPosition(mouse.Hit.Position)
-            end)
-        end
-
-        -- Touch tap for mobile
-        UserInputService.TouchTapInWorld:Connect(function(screenPosition, processed)
-            if processed then return end -- Ignore if UI processed the touch
-
-            -- Convert the screen position to a world position
-            local ray = camera:ScreenPointToRay(screenPosition.X, screenPosition.Y)
-            local rayDirection = ray.Direction * 1000 -- Extend the ray for a long distance 
-            local raycastResult = Workspace:Raycast(ray.Origin, rayDirection)
-
-            if raycastResult then
-                teleportToPosition(raycastResult.Position) -- Teleport to the raycast hit position
-            end
+local function on()
+    if isPC then
+        mouse.Button1Down:Connect(function()
+            teleportToPosition(mouse.Hit.Position)
         end)
     end
+
+    -- Touch tap for mobile
+    UserInputService.TouchTapInWorld:Connect(function(screenPosition, processed)
+        if processed then return end -- Ignore if UI processed the touch
+
+        -- Convert the screen position to a world position
+        local ray = camera:ScreenPointToRay(screenPosition.X, screenPosition.Y)
+        local rayDirection = ray.Direction * 1000 -- Extend the ray for a long distance 
+        local raycastResult = Workspace:Raycast(ray.Origin, rayDirection)
+
+        if raycastResult then
+            teleportToPosition(raycastResult.Position) -- Teleport to the raycast hit position
+        end
+    end)
 end
 
 local function onKeyPressed(input)
     if input.KeyCode == Enum.KeyCode.P then
         toggleAbility()
     end
-end
-
-local function on()
-    isOn = true
-
-    teleportLogic(tool)
 end
 
 local function off()
