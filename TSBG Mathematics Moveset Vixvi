@@ -1192,6 +1192,105 @@ else
     tool.Activated:Connect(onToolActivated)
 end
 
+local tool = createTool("Paradox")
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+
+local player = Players.LocalPlayer
+local mouse = player:GetMouse()
+local camera = Workspace.CurrentCamera
+
+-- Script state variables
+local scriptActive = false -- To track if the script is active
+local teleportEnabled = false
+local mouseConnection
+local touchConnection
+
+-- Function to teleport the player
+local function teleportToPosition(position)
+    if not teleportEnabled then return end -- Ignore if teleportation is disabled
+
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+    humanoidRootPart.CFrame = CFrame.new(position + Vector3.new(0, 3, 0)) -- Offset slightly above the ground
+end
+
+-- Function to stop the script
+local function stop()
+    if not scriptActive then return end -- Already stopped
+    teleportEnabled = false -- Disable teleportation
+
+    -- Disconnect existing connections
+    if mouseConnection then
+        mouseConnection:Disconnect()
+        mouseConnection = nil
+    end
+
+    if touchConnection then
+        touchConnection:Disconnect()
+        touchConnection = nil
+    end
+
+    print("Script stopped, teleportation disabled")
+end
+
+-- Function to activate the script
+local function teleportactivate()
+    if scriptActive then return end -- Already active
+    teleportEnabled = true -- Enable teleportation
+
+    -- Connect mouse input for PC
+    mouseConnection = mouse.Button1Down:Connect(function()
+        if teleportEnabled then
+            teleportToPosition(mouse.Hit.Position)
+        end
+    end)
+
+    -- Connect touch input for mobile
+    touchConnection = UserInputService.TouchTapInWorld:Connect(function(screenPosition, processed)
+        if not teleportEnabled or processed then return end -- Ignore if teleportation is disabled or UI processes touch
+
+        -- Convert 2D screen position to 3D world position
+        local ray = camera:ScreenPointToRay(screenPosition.X, screenPosition.Y)
+        local rayDirection = ray.Direction * 1000 -- Extend the ray far into the distance
+        local raycastResult = Workspace:Raycast(ray.Origin, rayDirection)
+
+        if raycastResult then
+            teleportToPosition(raycastResult.Position)
+        end
+    end)
+
+    print("Script activated, teleportation enabled")
+end
+
+local function onKeyPressed(input)
+    if input.KeyCode == Enum.KeyCode.P then
+        toggleTool()
+    end
+end
+
+local function toggleTool()
+    if not scriptActive then
+        teleportactivate()
+    else
+        stop()
+    end
+    scriptActive = not scriptActive
+end
+
+local function onToolActive()
+    toggleTool()
+end
+
+if isPC then
+    userInputService.InputBegan:Connect(onKeyPressed)
+else
+    tool.Activated:Connect(onToolActive)
+end
+
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 
@@ -1345,102 +1444,3 @@ getgenv().RArmCol = char['Right Arm'].ChildAdded:Connect(function(pp)
         }
     end
 end)
-
-local tool = createTool("Paradox")
-
-local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
-local Workspace = game:GetService("Workspace")
-
-local player = Players.LocalPlayer
-local mouse = player:GetMouse()
-local camera = Workspace.CurrentCamera
-
--- Script state variables
-local scriptActive = false -- To track if the script is active
-local teleportEnabled = false
-local mouseConnection
-local touchConnection
-
--- Function to teleport the player
-local function teleportToPosition(position)
-    if not teleportEnabled then return end -- Ignore if teleportation is disabled
-
-    local character = player.Character or player.CharacterAdded:Wait()
-    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-
-    humanoidRootPart.CFrame = CFrame.new(position + Vector3.new(0, 3, 0)) -- Offset slightly above the ground
-end
-
--- Function to stop the script
-local function stop()
-    if not scriptActive then return end -- Already stopped
-    teleportEnabled = false -- Disable teleportation
-
-    -- Disconnect existing connections
-    if mouseConnection then
-        mouseConnection:Disconnect()
-        mouseConnection = nil
-    end
-
-    if touchConnection then
-        touchConnection:Disconnect()
-        touchConnection = nil
-    end
-
-    print("Script stopped, teleportation disabled")
-end
-
--- Function to activate the script
-local function teleportactivate()
-    if scriptActive then return end -- Already active
-    teleportEnabled = true -- Enable teleportation
-
-    -- Connect mouse input for PC
-    mouseConnection = mouse.Button1Down:Connect(function()
-        if teleportEnabled then
-            teleportToPosition(mouse.Hit.Position)
-        end
-    end)
-
-    -- Connect touch input for mobile
-    touchConnection = UserInputService.TouchTapInWorld:Connect(function(screenPosition, processed)
-        if not teleportEnabled or processed then return end -- Ignore if teleportation is disabled or UI processes touch
-
-        -- Convert 2D screen position to 3D world position
-        local ray = camera:ScreenPointToRay(screenPosition.X, screenPosition.Y)
-        local rayDirection = ray.Direction * 1000 -- Extend the ray far into the distance
-        local raycastResult = Workspace:Raycast(ray.Origin, rayDirection)
-
-        if raycastResult then
-            teleportToPosition(raycastResult.Position)
-        end
-    end)
-
-    print("Script activated, teleportation enabled")
-end
-
-local function onKeyPressed(input)
-    if input.KeyCode == Enum.KeyCode.P then
-        toggleTool()
-    end
-end
-
-local function toggleTool()
-    if not scriptActive then
-        teleportactivate()
-    else
-        stop()
-    end
-    scriptActive = not scriptActive
-end
-
-local function onToolActive()
-    toggleTool()
-end
-
-if isPC then
-    userInputService.InputBegan:Connect(onKeyPressed)
-else
-    tool.Activated:Connect(onToolActive)
-end
