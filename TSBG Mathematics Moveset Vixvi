@@ -1294,7 +1294,7 @@ end
 local tool = createTool("Domain Expansion")
 
 -- Control variable to enable/disable the script
-local scriptActived = false -- Set to true to activate the teleportation sequence
+local scriptActived = true -- Set to true to activate the teleportation sequence
 
 -- Specify the coordinates for teleportation
 local teleportX = 1063.89 -- Replace with your desired X coordinate
@@ -1354,14 +1354,14 @@ local function toggleTools()
     scriptActived = not scriptActived
 end
 
-local function onToolActived()
+local function onToolActived2()
     toggleTools()
 end
 
 if isPC then
     userInputService.InputBegan:Connect(onKeyPressed)
 else
-    tool.Activated:Connect(onToolActived)
+    tool.Activated:Connect(onToolActived2)
 end
 
 local Players = game:GetService("Players")
