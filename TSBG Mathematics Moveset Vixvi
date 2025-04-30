@@ -1260,7 +1260,7 @@ local player = game.Players.LocalPlayer
  end
 
 tool.Equipped:Connect(function()
-  teleportActive()
+  teleportactivate()
  end)
 
 tool.Unequipped:Connect(function()
