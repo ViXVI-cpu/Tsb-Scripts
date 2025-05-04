@@ -1,5 +1,18 @@
 local player = game.Players.LocalPlayer
- 
+
+local plrbackpack = player.Backpack
+
+ local tool1 = plrbackpack:FindFirstChild("Flowing Water")
+
+ local tool2 = plrbackpack:FindFirstChild("Lethal Whirlwind Stream")
+
+ local tool3 = plrbackpack:FindFirstChild("Hunters Grasp")
+
+ local tool4 = plrbackpack:FindFirstChild("Prey's Peril")
+
+if not tool1 then
+return
+end
  local playerGui = player.PlayerGui
  
  local hotbar = playerGui:FindFirstChild("Hotbar")
@@ -7,10 +20,10 @@ local player = game.Players.LocalPlayer
  local backpack = hotbar:FindFirstChild("Backpack")
  
  local hotbarFrame = backpack:FindFirstChild("Hotbar")
+
+ local baseButton1 = hotbarFrame:FindFirstChild("1").Base
  
- local baseButton = hotbarFrame:FindFirstChild("1").Base
- 
- local ToolName = baseButton.ToolName
+ local ToolName = baseButton1.ToolName
  
  
  ToolName.Text = "Y Barrage"
@@ -26,9 +39,9 @@ local player = game.Players.LocalPlayer
  
  local hotbarFrame = backpack:FindFirstChild("Hotbar")
  
- local baseButton = hotbarFrame:FindFirstChild("2").Base
+ local baseButton2 = hotbarFrame:FindFirstChild("2").Base
  
- local ToolName = baseButton.ToolName
+ local ToolName = baseButton2.ToolName
  
  
  ToolName.Text = "Golden Ratio"
@@ -44,9 +57,9 @@ local player = game.Players.LocalPlayer
  
  local hotbarFrame = backpack:FindFirstChild("Hotbar")
  
- local baseButton = hotbarFrame:FindFirstChild("3").Base
+ local baseButton3 = hotbarFrame:FindFirstChild("3").Base
  
- local ToolName = baseButton.ToolName
+ local ToolName = baseButton3.ToolName
  
  
  ToolName.Text = "Fatal X"
@@ -62,9 +75,9 @@ local player = game.Players.LocalPlayer
  
  local hotbarFrame = backpack:FindFirstChild("Hotbar")
  
- local baseButton = hotbarFrame:FindFirstChild("4").Base
+ local baseButton4 = hotbarFrame:FindFirstChild("4").Base
  
- local ToolName = baseButton.ToolName
+ local ToolName = baseButton4.ToolName
  
  
  ToolName.Text = "Infinity"
@@ -116,23 +129,6 @@ local player = game.Players.LocalPlayer
  
  local humanoid = character:WaitForChild("Humanoid")
  
- 
- local function onAnimationPlayed(animationTrack)
- 
-     if animationTrack.Animation.AnimationId == "rbxassetid://" .. animationId then
- 
- 
- local p = game.Players.LocalPlayer
- 
- local Humanoid = p.Character:WaitForChild("Humanoid")
- 
- 
- for _, animTrack in pairs(Humanoid:GetPlayingAnimationTracks()) do
- 
-     animTrack:Stop()
- 
- end
- 
  -- First move
  local AnimAnim = Instance.new("Animation")
  
@@ -140,8 +136,14 @@ local player = game.Players.LocalPlayer
  
  local Anim = Humanoid:LoadAnimation(AnimAnim)
  
+tool1.Activated:Connect(function()
+  for _, animTrack in pairs(humanoid:GetPlayingAnimationTracks()) do
  
- local startTime = 0.2
+     animTrack:Stop()
+ 
+ end
+
+local startTime = 0.2
  
  
  Anim:Play()
@@ -151,15 +153,7 @@ local player = game.Players.LocalPlayer
  Anim.TimePosition = startTime
  
  Anim:AdjustSpeed(1)
- 
- 
-     end
- 
- end
- 
- 
- humanoid.AnimationPlayed:Connect(onAnimationPlayed)
- 
+end)
  
  local animationId = 18716113810
  
@@ -926,6 +920,7 @@ local player = game.Players.LocalPlayer
  
  
  local teleportDistance = 100
+
  local animationTrack = humanoid:LoadAnimation(teleportAnimation)
  
  
@@ -1201,6 +1196,8 @@ local player = game.Players.LocalPlayer
  local teleportEnabled = false
  local mouseConnection
  local touchConnection
+
+local animationTrack = humanoid:LoadAnimation(teleportAnimation)
  
  -- Function to teleport the player
  local function teleportToPosition(position)
