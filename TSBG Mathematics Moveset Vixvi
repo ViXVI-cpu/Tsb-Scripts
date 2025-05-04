@@ -134,7 +134,7 @@ end
  
  AnimAnim.AnimationId = "rbxassetid://18716698376"
  
- local Anim = Humanoid:LoadAnimation(AnimAnim)
+ local Anim = humanoid:LoadAnimation(AnimAnim)
  
 tool1.Activated:Connect(function()
   for _, animTrack in pairs(humanoid:GetPlayingAnimationTracks()) do
