@@ -1,5 +1,9 @@
 local player = game.Players.LocalPlayer
 
+local verison = "1"
+
+print(verison)
+
 local plrbackpack = player.Backpack
 
  local tool1 = plrbackpack:FindFirstChild("Flowing Water")
