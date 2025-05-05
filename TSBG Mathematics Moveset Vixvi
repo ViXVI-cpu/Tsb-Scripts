@@ -1,8 +1,8 @@
-local player = game.Players.LocalPlayer
-
 local verison = "1"
 
 print(verison)
+
+local player = game.Players.LocalPlayer
 
 local plrbackpack = player.Backpack
 
